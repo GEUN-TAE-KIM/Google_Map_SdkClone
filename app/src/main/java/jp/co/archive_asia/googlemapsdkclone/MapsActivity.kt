@@ -1,28 +1,21 @@
 package jp.co.archive_asia.googlemapsdkclone
 
-import android.hardware.Camera
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
-import androidx.lifecycle.Lifecycle
-
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.misc.CameraAndViewport
 import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
-import java.lang.Exception
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -55,7 +48,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return true
     }
 
-
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
@@ -79,6 +71,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // map.setPadding(0,0,300,0)
 
         typeAndStyle.setMapStyle(map, this)
+
+      /*  lifecycleScope.launch {
+            delay(5000L)
+            map.moveCamera(CameraUpdateFactory.zoomBy(3f))
+        }*/
+
     }
 
 }
