@@ -53,9 +53,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
         val kotoy = LatLng(34.99490705490703, 135.7851237570075)
+        val husimi = LatLng(34.96795042596563, 135.77569956219304)
         map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라"))
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
-      //  map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
+        //map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
         map.uiSettings.apply {
             // 화면에 줌할수있는 +/- 를 나타내는 것
             isZoomControlsEnabled = true
@@ -76,6 +77,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             delay(5000L)
             map.moveCamera(CameraUpdateFactory.zoomBy(3f))
         }*/
+
+        lifecycleScope.launch{
+            delay(4000L)
+            // 값만큼 카메라 이동
+            //map.moveCamera(CameraUpdateFactory.scrollBy(-200f,100f))
+
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(cameraAndViewport.tokyo, 0))
+        }
+
 
     }
 
