@@ -1,5 +1,6 @@
 package jp.co.archive_asia.googlemapsdkclone
 
+import android.hardware.Camera
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -19,12 +20,17 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
+import jp.co.archive_asia.googlemapsdkclone.misc.CameraAndViewport
+import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import java.lang.Exception
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+
+    private val typeAndStyle by lazy { TypeAndStyle() }
+    private val cameraAndViewport by lazy { CameraAndViewport() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,25 +51,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.normal_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_NORMAL
-            }
-            R.id.hybrid_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_HYBRID
-            }
-
-            R.id.satellite_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_SATELLITE
-            }
-
-            R.id.terrain_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_TERRAIN
-            }
-            R.id.none_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_NONE
-            }
-        }
+        typeAndStyle.setMapType(item, map)
         return true
     }
 
@@ -74,7 +62,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
         val kotoy = LatLng(34.99490705490703, 135.7851237570075)
         map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라"))
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
+      //  map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
         map.uiSettings.apply {
             // 화면에 줌할수있는 +/- 를 나타내는 것
             isZoomControlsEnabled = true
@@ -89,24 +78,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // 말그래도 패딩하는거 이동시키는것
         // map.setPadding(0,0,300,0)
 
-        setMapStyle(googleMap)
+        typeAndStyle.setMapStyle(map, this)
     }
 
-    // 구글지도 스타일을 제이손으로 불러서 적용한 것
-    // https://mapstyle.withgoogle.com/ 들어가서 하면됨
-    private fun setMapStyle(googleMap: GoogleMap) {
-        try {
-            val success = googleMap.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(
-                    this,
-                    R.raw.style
-                )
-            )
-            if (!success) {
-                Log.d("Maps", "Failed to add Style.")
-            }
-        } catch (e: Exception) {
-            Log.d("Maps", e.toString())
-        }
-    }
 }
