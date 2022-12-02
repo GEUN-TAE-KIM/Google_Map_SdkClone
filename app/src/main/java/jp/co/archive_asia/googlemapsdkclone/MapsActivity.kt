@@ -2,6 +2,7 @@ package jp.co.archive_asia.googlemapsdkclone
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -15,8 +16,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
+import java.lang.Exception
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -65,25 +68,45 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-override fun onMapReady(googleMap: GoogleMap) {
-    map = googleMap
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
 
-    // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
-    val kotoy = LatLng(34.99490705490703, 135.7851237570075)
-    map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라"))
-    map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
-    map.uiSettings.apply {
-        // 화면에 줌할수있는 +/- 를 나타내는 것
-        isZoomControlsEnabled = true
-        // 손가락 터치로 줌을 할수있냐없냐 를 나타낸 것
-        // isZoomGesturesEnabled = false
-        // 정적으로 맵을 보여주는 것 (동작불가 정지 화면)
-        // isScrollGesturesEnabled = false
+        // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
+        val kotoy = LatLng(34.99490705490703, 135.7851237570075)
+        map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라"))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
+        map.uiSettings.apply {
+            // 화면에 줌할수있는 +/- 를 나타내는 것
+            isZoomControlsEnabled = true
+            // 손가락 터치로 줌을 할수있냐없냐 를 나타낸 것
+            // isZoomGesturesEnabled = false
+            // 정적으로 맵을 보여주는 것 (동작불가 정지 화면)
+            // isScrollGesturesEnabled = false
 
-        // 자신의 장소를 버튼으로 활성화 하는 것 (자신의 위치 활성화 해야함)
-        isMyLocationButtonEnabled = true
+            // 자신의 장소를 버튼으로 활성화 하는 것 (자신의 위치 활성화 해야함)
+            isMyLocationButtonEnabled = true
+        }
+        // 말그래도 패딩하는거 이동시키는것
+        // map.setPadding(0,0,300,0)
+
+        setMapStyle(googleMap)
     }
-    // 말그래도 패딩하는거 이동시키는것
-    // map.setPadding(0,0,300,0)
-}
+
+    // 구글지도 스타일을 제이손으로 불러서 적용한 것
+    // https://mapstyle.withgoogle.com/ 들어가서 하면됨
+    private fun setMapStyle(googleMap: GoogleMap) {
+        try {
+            val success = googleMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this,
+                    R.raw.style
+                )
+            )
+            if (!success) {
+                Log.d("Maps", "Failed to add Style.")
+            }
+        } catch (e: Exception) {
+            Log.d("Maps", e.toString())
+        }
+    }
 }
