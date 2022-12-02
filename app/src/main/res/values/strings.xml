@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">GoogleMapSdkClone</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="normal">normal</string>
+    <string name="hybrid">hybrid</string>
+    <string name="satellite">satellite</string>
+    <string name="terrain">terrain</string>
+    <string name="none">none</string>
 </resources>
