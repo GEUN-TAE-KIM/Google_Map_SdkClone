@@ -21,21 +21,21 @@ import com.google.android.gms.maps.model.*
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.misc.CameraAndViewport
 import jp.co.archive_asia.googlemapsdkclone.misc.CustomInfoAdapter
+import jp.co.archive_asia.googlemapsdkclone.misc.Shapes
 import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPolylineClickListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
 
     private val typeAndStyle by lazy { TypeAndStyle() }
     private val cameraAndViewport by lazy { CameraAndViewport() }
+    private val shapes by lazy { Shapes() }
 
     private val kotoy = LatLng(34.99490705490703, 135.7851237570075)
-    private val husimi = LatLng(34.96795042596563, 135.77569956219304)
-    private val unicon = LatLng(35.624562979332424, 139.77562095676834)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,18 +76,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPolyli
 
         )
 
-        val husi = map.addMarker(
-            MarkerOptions()
-                .position(husimi)
-                .title("후시미 이나리")
-                .snippet("이쁨")
-                    //이 마커가 앞으로 나오게 하는 것
-                .zIndex(1f)
-        )
-
-
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
         map.uiSettings.apply {
             // 화면에 줌할수있는 +/- 를 나타내는 것
             isZoomControlsEnabled = true
@@ -104,7 +93,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPolyli
 
         typeAndStyle.setMapStyle(map, this)
 
-        map.setOnPolylineClickListener(this)
 
         /*  lifecycleScope.launch {
               delay(5000L)
@@ -119,36 +107,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPolyli
              //remove?.remove()
          }*/
 
+        shapes.addPolygon(map)
+
         lifecycleScope.launch {
-            addPolyline()
+
         }
 
     }
 
-    private suspend fun addPolyline() {
-        val polyline = map.addPolyline(
-            PolylineOptions().apply {
-                add(kotoy, husimi)
-                width(5f)
-                color(Color.BLUE)
-                // 직선을 유연하게 바꿈
-                geodesic(true)
-                clickable(true)
-            }
-        )
-
-        delay(5000L)
-
-        val newList = listOf(
-            kotoy, unicon, husimi
-        )
-
-        polyline.points = newList
-    }
-
-    override fun onPolylineClick(p0: Polyline) {
-        Toast.makeText(this,"click",Toast.LENGTH_SHORT).show()
-    }
 
 
 }
