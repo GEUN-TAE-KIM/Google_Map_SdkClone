@@ -1,5 +1,7 @@
 package jp.co.archive_asia.googlemapsdkclone
 
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,6 +12,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +29,7 @@ import jp.co.archive_asia.googlemapsdkclone.misc.Shapes
 import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.jar.Manifest
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -93,7 +98,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         typeAndStyle.setMapStyle(map, this)
 
-
+        checkLocationPermission()
         /*  lifecycleScope.launch {
               delay(5000L)
               map.moveCamera(CameraUpdateFactory.zoomBy(3f))
@@ -107,12 +112,43 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
              //remove?.remove()
          }*/
 
-        shapes.addCircle(map)
+    }
 
-        lifecycleScope.launch {
-
+    // 위치 확인 권환
+    private fun checkLocationPermission() {
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+        == PackageManager.PERMISSION_GRANTED) {
+            map.isMyLocationEnabled = true
+        } else {
+            requestPermissions()
         }
+    }
 
+    // 새로운 권한 요청
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+            1
+        )
+    }
+
+    // 거불 될때마다 요청
+    @SuppressLint("MissingPermission", "MissingSuperCall")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode !=1) {
+            return
+        }
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this,"Granted",Toast.LENGTH_SHORT).show()
+            map.isMyLocationEnabled = true
+        } else {
+            Toast.makeText(this,"no",Toast.LENGTH_SHORT).show()
+        }
     }
 
 
