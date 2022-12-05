@@ -20,7 +20,7 @@ import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -57,7 +57,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
         val kotoy = LatLng(34.99490705490703, 135.7851237570075)
         val husimi = LatLng(34.96795042596563, 135.77569956219304)
-        val kiyo = map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라"))
+        val kiyo = map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라").draggable(true))
         kiyo?.tag = "청수사"
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
@@ -77,7 +77,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         typeAndStyle.setMapStyle(map, this)
 
-        map.setOnMarkerClickListener(this)
+        map.setOnMarkerDragListener(this)
 
       /*  lifecycleScope.launch {
             delay(5000L)
@@ -94,13 +94,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     }
 
-    override fun onMarkerClick(marker: Marker): Boolean {
-        if(marker != null) {
-            Log.d("Marker",marker.tag as String)
-        } else {
-            Log.d("Marker", "Empty")
-        }
-        return false
+    override fun onMarkerDrag(p0: Marker) {
+        Log.d("Drag","Drag")
     }
+
+    override fun onMarkerDragEnd(p0: Marker) {
+        Log.d("Drag","end")
+    }
+
+    override fun onMarkerDragStart(p0: Marker) {
+        Log.d("Drag","start")
+    }
+
 
 }
