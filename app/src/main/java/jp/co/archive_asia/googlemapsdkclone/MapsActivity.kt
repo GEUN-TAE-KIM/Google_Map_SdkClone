@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.*
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.misc.CameraAndViewport
 import jp.co.archive_asia.googlemapsdkclone.misc.CustomInfoAdapter
+import jp.co.archive_asia.googlemapsdkclone.misc.Shapes
 import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,6 +33,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val typeAndStyle by lazy { TypeAndStyle() }
     private val cameraAndViewport by lazy { CameraAndViewport() }
+    private val shapes by lazy { Shapes() }
+
+    private val kotoy = LatLng(34.99490705490703, 135.7851237570075)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +64,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map = googleMap
 
         // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
-        val kotoy = LatLng(34.99490705490703, 135.7851237570075)
-        val husimi = LatLng(34.96795042596563, 135.77569956219304)
         val kiyo = map.addMarker(
             MarkerOptions()
                 .position(kotoy)
@@ -74,18 +76,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         )
 
-        val husi = map.addMarker(
-            MarkerOptions()
-                .position(husimi)
-                .title("후시미 이나리")
-                .snippet("이쁨")
-                    //이 마커가 앞으로 나오게 하는 것
-                .zIndex(1f)
-        )
-
-
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
         map.uiSettings.apply {
             // 화면에 줌할수있는 +/- 를 나타내는 것
             isZoomControlsEnabled = true
@@ -102,7 +93,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         typeAndStyle.setMapStyle(map, this)
 
-        map.setInfoWindowAdapter(CustomInfoAdapter(this))
+
         /*  lifecycleScope.launch {
               delay(5000L)
               map.moveCamera(CameraUpdateFactory.zoomBy(3f))
@@ -116,8 +107,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
              //remove?.remove()
          }*/
 
-    }
+        shapes.addCircle(map)
 
+        lifecycleScope.launch {
+
+        }
+
+    }
 
 
 
