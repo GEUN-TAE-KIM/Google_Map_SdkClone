@@ -107,7 +107,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
              //remove?.remove()
          }*/
 
-        shapes.addPolygon(map)
+        shapes.addCircle(map)
 
         lifecycleScope.launch {
 
