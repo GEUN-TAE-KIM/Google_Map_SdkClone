@@ -1,26 +1,30 @@
 package jp.co.archive_asia.googlemapsdkclone
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.misc.CameraAndViewport
 import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -57,8 +61,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
         val kotoy = LatLng(34.99490705490703, 135.7851237570075)
         val husimi = LatLng(34.96795042596563, 135.77569956219304)
-        val kiyo = map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라").draggable(true))
-        kiyo?.tag = "청수사"
+        val kiyo = map.addMarker(
+            MarkerOptions()
+                .position(kotoy)
+                .title("기요미즈데라")
+            // 색상 적용
+            //.icon(BitmapDescriptorFactory.defaultMarker(114f))
+                .icon(fromVectorToBitmap(R.drawable.ic_launcher_foreground, Color.parseColor("#000000")))
+
+        )
+
+
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
         map.uiSettings.apply {
@@ -77,33 +90,40 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         typeAndStyle.setMapStyle(map, this)
 
-        map.setOnMarkerDragListener(this)
 
-      /*  lifecycleScope.launch {
-            delay(5000L)
-            map.moveCamera(CameraUpdateFactory.zoomBy(3f))
-        }*/
+        /*  lifecycleScope.launch {
+              delay(5000L)
+              map.moveCamera(CameraUpdateFactory.zoomBy(3f))
+          }*/
 
-       /* lifecycleScope.launch{
-            delay(4000L)
-            // 값만큼 카메라 이동
-            //map.moveCamera(CameraUpdateFactory.scrollBy(-200f,100f))
-            // 마크 제거
-            //remove?.remove()
-        }*/
+        /* lifecycleScope.launch{
+             delay(4000L)
+             // 값만큼 카메라 이동
+             //map.moveCamera(CameraUpdateFactory.scrollBy(-200f,100f))
+             // 마크 제거
+             //remove?.remove()
+         }*/
 
     }
 
-    override fun onMarkerDrag(p0: Marker) {
-        Log.d("Drag","Drag")
-    }
+    // 벡터 파일을 비트맵 개체로 변환하고 비트맵을 반환하는 방법
+    private fun fromVectorToBitmap(id: Int, color: Int): BitmapDescriptor {
+        val vectorDrawable: Drawable? = ResourcesCompat.getDrawable(resources, id, null)
+        if (vectorDrawable == null) {
+            Log.d("MapsActivity", "Resource not found.")
+            return BitmapDescriptorFactory.defaultMarker()
+        }
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
+        DrawableCompat.setTint(vectorDrawable, color)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
 
-    override fun onMarkerDragEnd(p0: Marker) {
-        Log.d("Drag","end")
-    }
-
-    override fun onMarkerDragStart(p0: Marker) {
-        Log.d("Drag","start")
     }
 
 
