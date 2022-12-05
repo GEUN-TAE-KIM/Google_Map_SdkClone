@@ -67,8 +67,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .title("기요미즈데라")
             // 색상 적용
             //.icon(BitmapDescriptorFactory.defaultMarker(114f))
-                .icon(fromVectorToBitmap(R.drawable.ic_launcher_foreground, Color.parseColor("#000000")))
+            // 벡터 변환 색상 적용
+            // .icon(fromVectorToBitmap(R.drawable.ic_launcher_foreground, Color.parseColor("#000000")))
 
+        )
+
+        val husi = map.addMarker(
+            MarkerOptions()
+                .position(husimi)
+                .title("후시미 이나리")
+                    //이 마커가 앞으로 나오게 하는 것
+                .zIndex(1f)
         )
 
 
@@ -103,26 +112,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
              // 마크 제거
              //remove?.remove()
          }*/
-
-    }
-
-    // 벡터 파일을 비트맵 개체로 변환하고 비트맵을 반환하는 방법
-    private fun fromVectorToBitmap(id: Int, color: Int): BitmapDescriptor {
-        val vectorDrawable: Drawable? = ResourcesCompat.getDrawable(resources, id, null)
-        if (vectorDrawable == null) {
-            Log.d("MapsActivity", "Resource not found.")
-            return BitmapDescriptorFactory.defaultMarker()
-        }
-        val bitmap = Bitmap.createBitmap(
-            vectorDrawable.intrinsicWidth,
-            vectorDrawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
-        DrawableCompat.setTint(vectorDrawable, color)
-        vectorDrawable.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
 
     }
 
