@@ -25,13 +25,17 @@ import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPolylineClickListener {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
 
     private val typeAndStyle by lazy { TypeAndStyle() }
     private val cameraAndViewport by lazy { CameraAndViewport() }
+
+    private val kotoy = LatLng(34.99490705490703, 135.7851237570075)
+    private val husimi = LatLng(34.96795042596563, 135.77569956219304)
+    private val unicon = LatLng(35.624562979332424, 139.77562095676834)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +64,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map = googleMap
 
         // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
-        val kotoy = LatLng(34.99490705490703, 135.7851237570075)
-        val husimi = LatLng(34.96795042596563, 135.77569956219304)
         val kiyo = map.addMarker(
             MarkerOptions()
                 .position(kotoy)
@@ -102,7 +104,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         typeAndStyle.setMapStyle(map, this)
 
-        map.setInfoWindowAdapter(CustomInfoAdapter(this))
+        map.setOnPolylineClickListener(this)
+
         /*  lifecycleScope.launch {
               delay(5000L)
               map.moveCamera(CameraUpdateFactory.zoomBy(3f))
@@ -116,9 +119,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
              //remove?.remove()
          }*/
 
+        lifecycleScope.launch {
+            addPolyline()
+        }
+
     }
 
+    private suspend fun addPolyline() {
+        val polyline = map.addPolyline(
+            PolylineOptions().apply {
+                add(kotoy, husimi)
+                width(5f)
+                color(Color.BLUE)
+                // 직선을 유연하게 바꿈
+                geodesic(true)
+                clickable(true)
+            }
+        )
 
+        delay(5000L)
+
+        val newList = listOf(
+            kotoy, unicon, husimi
+        )
+
+        polyline.points = newList
+    }
+
+    override fun onPolylineClick(p0: Polyline) {
+        Toast.makeText(this,"click",Toast.LENGTH_SHORT).show()
+    }
 
 
 }
