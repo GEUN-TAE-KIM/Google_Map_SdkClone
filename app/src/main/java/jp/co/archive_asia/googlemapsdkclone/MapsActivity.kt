@@ -24,7 +24,7 @@ import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -65,6 +65,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             MarkerOptions()
                 .position(kotoy)
                 .title("기요미즈데라")
+                .snippet("멋있음")
             // 색상 적용
             //.icon(BitmapDescriptorFactory.defaultMarker(114f))
             // 벡터 변환 색상 적용
@@ -76,6 +77,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             MarkerOptions()
                 .position(husimi)
                 .title("후시미 이나리")
+                .snippet("이쁨")
                     //이 마커가 앞으로 나오게 하는 것
                 .zIndex(1f)
         )
@@ -99,7 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         typeAndStyle.setMapStyle(map, this)
 
-
+        map.setOnMarkerClickListener(this)
         /*  lifecycleScope.launch {
               delay(5000L)
               map.moveCamera(CameraUpdateFactory.zoomBy(3f))
@@ -113,6 +115,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
              //remove?.remove()
          }*/
 
+    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+        map.animateCamera(CameraUpdateFactory.zoomTo(17f), 2000,null)
+        marker.showInfoWindow()
+        return true
     }
 
 
