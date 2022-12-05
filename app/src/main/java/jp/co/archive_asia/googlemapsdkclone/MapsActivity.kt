@@ -1,6 +1,7 @@
 package jp.co.archive_asia.googlemapsdkclone
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.misc.CameraAndViewport
@@ -18,7 +20,7 @@ import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -55,7 +57,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
         val kotoy = LatLng(34.99490705490703, 135.7851237570075)
         val husimi = LatLng(34.96795042596563, 135.77569956219304)
-        map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라"))
+        val kiyo = map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라"))
+        kiyo?.tag = "청수사"
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
         map.uiSettings.apply {
@@ -74,40 +77,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         typeAndStyle.setMapStyle(map, this)
 
+        map.setOnMarkerClickListener(this)
+
       /*  lifecycleScope.launch {
             delay(5000L)
             map.moveCamera(CameraUpdateFactory.zoomBy(3f))
         }*/
 
-        lifecycleScope.launch{
+       /* lifecycleScope.launch{
             delay(4000L)
             // 값만큼 카메라 이동
             //map.moveCamera(CameraUpdateFactory.scrollBy(-200f,100f))
+            // 마크 제거
+            //remove?.remove()
+        }*/
 
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(cameraAndViewport.tokyo, 0))
-        }
-
-        onMapClicked()
-        onMapLongClicked()
     }
 
-    private fun onMapClicked() {
-        map.setOnMapClickListener {
-            Toast.makeText(this,"Single Click", Toast.LENGTH_SHORT).show()
+    override fun onMarkerClick(marker: Marker): Boolean {
+        if(marker != null) {
+            Log.d("Marker",marker.tag as String)
+        } else {
+            Log.d("Marker", "Empty")
         }
+        return false
     }
-
-    private fun onMapLongClicked() {
-        map.setOnMapLongClickListener {
-            // 메세지로 찍은 위치 좌표 나타나게 하기
-           // Toast.makeText(this,"${it.longitude} ${it.latitude}", Toast.LENGTH_SHORT).show()
-            map.addMarker(MarkerOptions().position(it).title("New Marker"))
-        }
-    }
-
-
-
-
-
 
 }
