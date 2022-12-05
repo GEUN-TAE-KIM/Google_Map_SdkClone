@@ -3,6 +3,7 @@ package jp.co.archive_asia.googlemapsdkclone
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -86,7 +87,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(cameraAndViewport.tokyo, 0))
         }
 
-
+        onMapClicked()
+        onMapLongClicked()
     }
+
+    private fun onMapClicked() {
+        map.setOnMapClickListener {
+            Toast.makeText(this,"Single Click", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun onMapLongClicked() {
+        map.setOnMapLongClickListener {
+            // 메세지로 찍은 위치 좌표 나타나게 하기
+           // Toast.makeText(this,"${it.longitude} ${it.latitude}", Toast.LENGTH_SHORT).show()
+            map.addMarker(MarkerOptions().position(it).title("New Marker"))
+        }
+    }
+
+
+
+
+
 
 }
