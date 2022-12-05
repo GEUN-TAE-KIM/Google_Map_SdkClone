@@ -20,11 +20,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.misc.CameraAndViewport
+import jp.co.archive_asia.googlemapsdkclone.misc.CustomInfoAdapter
 import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -101,7 +102,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         typeAndStyle.setMapStyle(map, this)
 
-        map.setOnMarkerClickListener(this)
+        map.setInfoWindowAdapter(CustomInfoAdapter(this))
         /*  lifecycleScope.launch {
               delay(5000L)
               map.moveCamera(CameraUpdateFactory.zoomBy(3f))
@@ -117,11 +118,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     }
 
-    override fun onMarkerClick(marker: Marker): Boolean {
-        map.animateCamera(CameraUpdateFactory.zoomTo(17f), 2000,null)
-        marker.showInfoWindow()
-        return true
-    }
+
 
 
 }
