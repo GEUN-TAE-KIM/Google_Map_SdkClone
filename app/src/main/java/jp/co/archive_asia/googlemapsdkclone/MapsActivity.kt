@@ -1,19 +1,26 @@
 package jp.co.archive_asia.googlemapsdkclone
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import jp.co.archive_asia.googlemapsdkclone.databinding.ActivityMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.misc.CameraAndViewport
+import jp.co.archive_asia.googlemapsdkclone.misc.CustomInfoAdapter
 import jp.co.archive_asia.googlemapsdkclone.misc.TypeAndStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -55,7 +62,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // 구글지도 켜서 해당 위치 오른쪽 마우스 클릭하면 위도경도 다 나옴
         val kotoy = LatLng(34.99490705490703, 135.7851237570075)
         val husimi = LatLng(34.96795042596563, 135.77569956219304)
-        map.addMarker(MarkerOptions().position(kotoy).title("기요미즈데라"))
+        val kiyo = map.addMarker(
+            MarkerOptions()
+                .position(kotoy)
+                .title("기요미즈데라")
+                .snippet("멋있음")
+            // 색상 적용
+            //.icon(BitmapDescriptorFactory.defaultMarker(114f))
+            // 벡터 변환 색상 적용
+            // .icon(fromVectorToBitmap(R.drawable.ic_launcher_foreground, Color.parseColor("#000000")))
+
+        )
+
+        val husi = map.addMarker(
+            MarkerOptions()
+                .position(husimi)
+                .title("후시미 이나리")
+                .snippet("이쁨")
+                    //이 마커가 앞으로 나오게 하는 것
+                .zIndex(1f)
+        )
+
+
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewport.kyoto))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(kotoy, 10f))
         map.uiSettings.apply {
@@ -74,38 +102,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         typeAndStyle.setMapStyle(map, this)
 
-      /*  lifecycleScope.launch {
-            delay(5000L)
-            map.moveCamera(CameraUpdateFactory.zoomBy(3f))
-        }*/
+        map.setInfoWindowAdapter(CustomInfoAdapter(this))
+        /*  lifecycleScope.launch {
+              delay(5000L)
+              map.moveCamera(CameraUpdateFactory.zoomBy(3f))
+          }*/
 
-        lifecycleScope.launch{
-            delay(4000L)
-            // 값만큼 카메라 이동
-            //map.moveCamera(CameraUpdateFactory.scrollBy(-200f,100f))
+        /* lifecycleScope.launch{
+             delay(4000L)
+             // 값만큼 카메라 이동
+             //map.moveCamera(CameraUpdateFactory.scrollBy(-200f,100f))
+             // 마크 제거
+             //remove?.remove()
+         }*/
 
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(cameraAndViewport.tokyo, 0))
-        }
-
-        onMapClicked()
-        onMapLongClicked()
     }
-
-    private fun onMapClicked() {
-        map.setOnMapClickListener {
-            Toast.makeText(this,"Single Click", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun onMapLongClicked() {
-        map.setOnMapLongClickListener {
-            // 메세지로 찍은 위치 좌표 나타나게 하기
-           // Toast.makeText(this,"${it.longitude} ${it.latitude}", Toast.LENGTH_SHORT).show()
-            map.addMarker(MarkerOptions().position(it).title("New Marker"))
-        }
-    }
-
-
 
 
 
