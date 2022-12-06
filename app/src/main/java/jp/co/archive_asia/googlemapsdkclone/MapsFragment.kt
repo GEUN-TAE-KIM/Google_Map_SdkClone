@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -19,6 +21,7 @@ import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentPermissionBinding
+import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.disable
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.hide
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.show
 import jp.co.archive_asia.googlemapsdkclone.util.Permissions.hasBackgroundLocationPermission
@@ -51,13 +54,42 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     }
 
 
-   private fun onStartButtonClicked() {
-       if (hasBackgroundLocationPermission(requireContext())) {
+    private fun onStartButtonClicked() {
+        if (hasBackgroundLocationPermission(requireContext())) {
+            startCountDown()
+            binding.startButton.disable()
+            binding.stopButton.hide()
+            binding.resetButton.show()
+        } else {
+            requestBackgroundLocationPermission(this)
+        }
 
-       } else {
-           requestBackgroundLocationPermission(this)
-       }
+    }
 
+    //버튼을 클릭하면 해당 함수가 호출 되면서 숫자들이 나옴
+    private fun startCountDown() {
+        binding.timerTextView.show()
+        binding.startButton.disable()
+        val timer: CountDownTimer = object : CountDownTimer(4000, 1000) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                val currentSecond = millisUntilFinished / 1000
+                if(currentSecond.toString() == "0") {
+                    binding.timerTextView.text = "go"
+                    binding.timerTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                }
+                else {
+                    binding.timerTextView.text = currentSecond.toString()
+                    binding.timerTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple_700))
+
+                }
+            }
+
+            override fun onFinish() {
+                binding.timerTextView.hide()
+            }
+        }
+        timer.start()
     }
 
     // 백그라운드 권한드거부할때 조건문
