@@ -1,10 +1,10 @@
-package jp.co.archive_asia.googlemapsdkclone
+package jp.co.archive_asia.googlemapsdkclone.util
 
 import android.Manifest
 import android.content.Context
 import androidx.fragment.app.Fragment
 import com.vmadalin.easypermissions.EasyPermissions
-import jp.co.archive_asia.googlemapsdkclone.Constants.PERMISSION_LOCATION_REQUEST_CODE
+import jp.co.archive_asia.googlemapsdkclone.util.Constants.PERMISSION_LOCATION_REQUEST_CODE
 
 object Permissions {
 

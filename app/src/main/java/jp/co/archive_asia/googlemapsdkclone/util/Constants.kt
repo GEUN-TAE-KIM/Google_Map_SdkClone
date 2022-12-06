@@ -1,4 +1,4 @@
-package jp.co.archive_asia.googlemapsdkclone
+package jp.co.archive_asia.googlemapsdkclone.util
 
 object Constants {
 

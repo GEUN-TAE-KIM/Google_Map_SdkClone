@@ -3,9 +3,8 @@ package jp.co.archive_asia.googlemapsdkclone
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import jp.co.archive_asia.googlemapsdkclone.Permissions.hasLocationPermission
+import jp.co.archive_asia.googlemapsdkclone.util.Permissions.hasLocationPermission
 
 class MainActivity : AppCompatActivity() {
 
