@@ -5,16 +5,62 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import jp.co.archive_asia.googlemapsdkclone.Permissions.hasLocationPermission
+import jp.co.archive_asia.googlemapsdkclone.Permissions.requestLocationPermission
+import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentPermissionBinding
 
+class PermissionFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
-class PermissionFragment : Fragment() {
+    private var _binding: FragmentPermissionBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_permission, container, false)
+
+        _binding = FragmentPermissionBinding.inflate(inflater, container, false)
+
+        binding.continueButton.setOnClickListener {
+            if (hasLocationPermission(requireContext())) {
+                findNavController().navigate(R.id.action_permissionFragment_to_mapsFragment)
+            } else {
+                requestLocationPermission(this)
+            }
+        }
+
+        return binding.root
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        // super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    //권한 거부
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            SettingsDialog.Builder(requireActivity()).build().show()
+        } else {
+            requestLocationPermission(this)
+        }
+    }
+
+    // 권한 부여
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
+        findNavController().navigate(R.id.action_permissionFragment_to_mapsFragment)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }
