@@ -6,4 +6,6 @@
     <string name="satellite">satellite</string>
     <string name="terrain">terrain</string>
     <string name="none">none</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
