@@ -1,8 +1,8 @@
 package jp.co.archive_asia.googlemapsdkclone
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.fragment.app.Fragment
-
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -21,6 +20,8 @@ import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentPermissionBinding
+import jp.co.archive_asia.googlemapsdkclone.service.TrackerService
+import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_START
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.disable
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.hide
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.show
@@ -86,10 +87,22 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
 
             override fun onFinish() {
+                sendActionCommandToService(ACTION_SERVICE_START)
                 binding.timerTextView.hide()
             }
         }
         timer.start()
+    }
+
+    // 서비스에 작업 명령을 보내는 것
+    private fun sendActionCommandToService(action: String) {
+        Intent(
+            requireContext(),
+            TrackerService::class.java
+        ).apply {
+            this.action = action
+            requireContext().startService(this)
+        }
     }
 
     // 백그라운드 권한드거부할때 조건문
