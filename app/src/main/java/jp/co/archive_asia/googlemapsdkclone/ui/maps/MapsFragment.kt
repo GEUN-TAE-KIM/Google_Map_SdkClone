@@ -27,7 +27,9 @@ import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.service.TrackerService
 import jp.co.archive_asia.googlemapsdkclone.ui.maps.MapUtil.setCameraPosition
 import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_START
+import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_STOP
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.disable
+import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.enable
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.hide
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.show
 import jp.co.archive_asia.googlemapsdkclone.util.Permissions.hasBackgroundLocationPermission
@@ -57,7 +59,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         binding.startButton.setOnClickListener {
             onStartButtonClicked()
         }
-        binding.stopButton.setOnClickListener { }
+        binding.stopButton.setOnClickListener {
+            onStopButtonClicked()
+        }
         binding.resetButton.setOnClickListener { }
 
         return binding.root
@@ -69,11 +73,17 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             startCountDown()
             binding.startButton.disable()
             binding.stopButton.hide()
-            binding.resetButton.show()
+            binding.stopButton.show()
         } else {
             requestBackgroundLocationPermission(this)
         }
 
+    }
+
+    private fun onStopButtonClicked() {
+        stopForegroundService()
+        binding.stopButton.hide()
+        binding.startButton.show()
     }
 
     //버튼을 클릭하면 해당 함수가 호출 되면서 숫자들이 나옴
@@ -110,6 +120,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
         }
         timer.start()
+    }
+
+    private fun stopForegroundService() {
+        binding.stopButton.disable()
+        sendActionCommandToService(ACTION_SERVICE_STOP)
     }
 
     // 서비스에 작업 명령을 보내는 것
@@ -176,11 +191,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             if (it != null) {
                 locationList = it
                 Log.d("LocationList", locationList.toString())
+                if (locationList.size > 1) {
+                    binding.stopButton.enable()
+                }
                 drawPolyline()
                 followPolyline()
             }
         }
+
     }
+
 
     // 경로로 설정한 길을 지나가면 선이 남아서 흔적을 남기는 것
     private fun drawPolyline() {
@@ -193,6 +213,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 addAll(locationList)
             }
         )
+
     }
 
     // 이동시 카메라가 따라가는 것

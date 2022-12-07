@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
+import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.Build
@@ -90,6 +91,7 @@ class TrackerService: LifecycleService() {
                 }
                 ACTION_SERVICE_STOP -> {
                     started.postValue(false)
+                    stopForegroundService()
                 }
                 else -> {}
             }
@@ -117,6 +119,22 @@ class TrackerService: LifecycleService() {
             locationCallback,
             Looper.getMainLooper()
         )
+
+    }
+
+    //포그라운드 서비스 스타트 한것을 스톱하는 것
+    private fun stopForegroundService() {
+        removeLocationUpdates()
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(
+            NOTIFICATION_ID
+        )
+        stopForeground(true)
+        stopSelf()
+    }
+
+    // 위치 업데이트를 제거 하며 콜백하여 전달
+    private fun removeLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
     // api 26이상을 사용하는 경우의 알림 채널을 공지
