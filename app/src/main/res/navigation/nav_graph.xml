@@ -6,7 +6,7 @@
     app:startDestination="@id/permissionFragment">
     <fragment
         android:id="@+id/permissionFragment"
-        android:name="jp.co.archive_asia.googlemapsdkclone.PermissionFragment"
+        android:name="jp.co.archive_asia.googlemapsdkclone.ui.permission.PermissionFragment"
         android:label="fragment_permission"
         tools:layout="@layout/fragment_permission" >
         <action
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="jp.co.archive_asia.googlemapsdkclone.MapsFragment"
+        android:name="jp.co.archive_asia.googlemapsdkclone.ui.maps.MapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" >
         <action
@@ -24,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/resultFragment"
-        android:name="jp.co.archive_asia.googlemapsdkclone.ResultFragment"
+        android:name="jp.co.archive_asia.googlemapsdkclone.ui.result.ResultFragment"
         android:label="fragment_result"
         tools:layout="@layout/fragment_result" >
         <action

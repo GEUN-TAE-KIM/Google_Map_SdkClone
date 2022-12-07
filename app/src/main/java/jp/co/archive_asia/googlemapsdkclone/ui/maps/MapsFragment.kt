@@ -1,26 +1,22 @@
-package jp.co.archive_asia.googlemapsdkclone
+package jp.co.archive_asia.googlemapsdkclone.ui.maps
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
-import dagger.hilt.android.AndroidEntryPoint
+import jp.co.archive_asia.googlemapsdkclone.R
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentMapsBinding
-import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentPermissionBinding
 import jp.co.archive_asia.googlemapsdkclone.service.TrackerService
 import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_START
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.disable
@@ -32,7 +28,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 //서비스를 연동하기 위해서
-@AndroidEntryPoint
+//@AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
     EasyPermissions.PermissionCallbacks {
 
@@ -80,11 +76,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 val currentSecond = millisUntilFinished / 1000
                 if(currentSecond.toString() == "0") {
                     binding.timerTextView.text = "go"
-                    binding.timerTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                    binding.timerTextView.setTextColor(ContextCompat.getColor(requireContext(),
+                        R.color.black
+                    ))
                 }
                 else {
                     binding.timerTextView.text = currentSecond.toString()
-                    binding.timerTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple_700))
+                    binding.timerTextView.setTextColor(ContextCompat.getColor(requireContext(),
+                        R.color.purple_700
+                    ))
 
                 }
             }

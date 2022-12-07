@@ -49,6 +49,7 @@ class TrackerService: LifecycleService() {
             when(it.action) {
                 ACTION_SERVICE_START -> {
                     started.postValue(true)
+                    startForegroundService()
                 }
                 ACTION_SERVICE_STOP -> {
                     started.postValue(false)
@@ -57,6 +58,12 @@ class TrackerService: LifecycleService() {
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    // 포그라운드 서브스의 알림 기능 생성한걸 호출
+    private fun startForegroundService() {
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, notification.build())
     }
 
     // api 26이상을 사용하는 경우의 알림 채널을 공지

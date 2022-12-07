@@ -1,4 +1,4 @@
-package jp.co.archive_asia.googlemapsdkclone
+package jp.co.archive_asia.googlemapsdkclone.ui.permission
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import jp.co.archive_asia.googlemapsdkclone.R
 import jp.co.archive_asia.googlemapsdkclone.util.Permissions.hasLocationPermission
 import jp.co.archive_asia.googlemapsdkclone.util.Permissions.requestLocationPermission
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentPermissionBinding
