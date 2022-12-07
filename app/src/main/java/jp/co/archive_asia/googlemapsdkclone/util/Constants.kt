@@ -18,4 +18,8 @@ object Constants {
 
     const val PENDING_INTENT_REQUEST_CODE = 99
 
+    // 이동하는 경로 지정한 위치를 표현하는 것
+    const val LOCATION_UPDATE_INTERVAL = 4000L
+    const val LOCATION_FASTEST_UPDATE_INTERVAL = 2000L
+
 }

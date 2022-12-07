@@ -29,6 +29,7 @@ object NotificationModule {
     @SuppressLint("UnspecifiedImmutableFlag")
     @ServiceScoped
     @Provides
+    // 보류중인 의도를 제공하는 것
     fun providePendingIntent(
         @ApplicationContext context: Context
     ): PendingIntent {
@@ -51,6 +52,7 @@ object NotificationModule {
 
 
     // 알림 표시
+    // 자신만의 생명주기를 같은 것
     @ServiceScoped
     @Provides
     // 포그라운드 서비스에는 Notification을 표시 해야함
@@ -65,6 +67,7 @@ object NotificationModule {
             .setContentIntent(pendingIntent)
     }
 
+    // 알림 관리자 제공 방법
     @ServiceScoped
     @Provides
     fun provideNotificationManager(
