@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import jp.co.archive_asia.googlemapsdkclone.R
@@ -36,6 +38,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     private val binding get() = _binding!!
 
     private lateinit var map: GoogleMap
+
+    private var locationList = mutableListOf<LatLng>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -151,6 +155,17 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             isTiltGesturesEnabled = false
             isCompassEnabled = false
             isScrollGesturesEnabled = false
+        }
+        observeTrackerService()
+    }
+
+    // 옵저버로 관촬하여 라이브 사이클로 해서 업데이트 하는 것
+    private fun observeTrackerService() {
+        TrackerService.locationList.observe(viewLifecycleOwner) {
+            if (it != null) {
+                locationList = it
+                Log.d("LocationList", locationList.toString())
+            }
         }
     }
 
