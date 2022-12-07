@@ -2,6 +2,7 @@ package jp.co.archive_asia.googlemapsdkclone.ui.maps
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -11,15 +12,20 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.ButtCap
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import jp.co.archive_asia.googlemapsdkclone.R
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.service.TrackerService
+import jp.co.archive_asia.googlemapsdkclone.ui.maps.MapUtil.setCameraPosition
 import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_START
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.disable
 import jp.co.archive_asia.googlemapsdkclone.util.ExtensionFunctions.hide
@@ -78,17 +84,22 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
             override fun onTick(millisUntilFinished: Long) {
                 val currentSecond = millisUntilFinished / 1000
-                if(currentSecond.toString() == "0") {
+                if (currentSecond.toString() == "0") {
                     binding.timerTextView.text = "go"
-                    binding.timerTextView.setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.black
-                    ))
-                }
-                else {
+                    binding.timerTextView.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.black
+                        )
+                    )
+                } else {
                     binding.timerTextView.text = currentSecond.toString()
-                    binding.timerTextView.setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.purple_700
-                    ))
+                    binding.timerTextView.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.purple_700
+                        )
+                    )
 
                 }
             }
@@ -165,7 +176,37 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             if (it != null) {
                 locationList = it
                 Log.d("LocationList", locationList.toString())
+                drawPolyline()
+                followPolyline()
             }
+        }
+    }
+
+    // 경로로 설정한 길을 지나가면 선이 남아서 흔적을 남기는 것
+    private fun drawPolyline() {
+        val polyline = map.addPolyline(
+            PolylineOptions().apply {
+                width(10f)
+                color(Color.BLUE)
+                jointType(JointType.ROUND)
+                startCap(ButtCap())
+                addAll(locationList)
+            }
+        )
+    }
+
+    // 이동시 카메라가 따라가는 것
+    private fun followPolyline() {
+        if (locationList.isNotEmpty()) {
+            map.animateCamera(
+                (
+                        CameraUpdateFactory.newCameraPosition(
+                            setCameraPosition(
+                                locationList.last()
+                            )
+                        )
+                        ), 1000, null
+            )
         }
     }
 
