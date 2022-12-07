@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import dagger.hilt.android.AndroidEntryPoint
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentMapsBinding
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentPermissionBinding
 import jp.co.archive_asia.googlemapsdkclone.service.TrackerService
@@ -30,6 +31,8 @@ import jp.co.archive_asia.googlemapsdkclone.util.Permissions.requestBackgroundLo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+//서비스를 연동하기 위해서
+@AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
     EasyPermissions.PermissionCallbacks {
 
