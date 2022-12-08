@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -44,6 +45,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     private lateinit var map: GoogleMap
 
+    val started = MutableLiveData(false)
+
     private var startTime = 0L
     private var stopTime = 0L
 
@@ -55,6 +58,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+        binding.tracking = this
 
         binding.startButton.setOnClickListener {
             onStartButtonClicked()
@@ -197,6 +202,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 drawPolyline()
                 followPolyline()
             }
+        }
+        TrackerService.started.observe(viewLifecycleOwner) {
+            started.value = it
         }
         TrackerService.startTime.observe(viewLifecycleOwner) {
             startTime = it
