@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
+import jp.co.archive_asia.googlemapsdkclone.ui.maps.MapUtil
 import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_START
 import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_STOP
 import jp.co.archive_asia.googlemapsdkclone.util.Constants.LOCATION_FASTEST_UPDATE_INTERVAL
@@ -61,11 +62,20 @@ class TrackerService: LifecycleService() {
             result.locations.let { locations ->
                 for (location in locations) {
                     updateLocationList(location)
-
+                    updateNotificationPeriodically()
                 }
 
             }
         }
+    }
+
+    // 거리에 대하여 주기적으로 업데이트해서 나타나게 하기
+    private fun updateNotificationPeriodically() {
+        notification.apply {
+            setContentTitle("Distance Travelled")
+            setContentText(locationList.value?.let { MapUtil.calculateTheDistance(it) } + "km")
+        }
+        notificationManager.notify(NOTIFICATION_ID, notification.build())
     }
 
     // 새로운 정보를 받을 때 마다 위치 목록을 업데이트 할려는 것
