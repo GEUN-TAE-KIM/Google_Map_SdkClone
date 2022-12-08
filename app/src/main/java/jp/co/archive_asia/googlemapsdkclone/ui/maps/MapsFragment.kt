@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -55,6 +57,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     private var stopTime = 0L
 
     private var locationList = mutableListOf<LatLng>()
+    private var polylineList = mutableListOf<Polyline>()
+
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,11 +76,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         binding.stopButton.setOnClickListener {
             onStopButtonClicked()
         }
-        binding.resetButton.setOnClickListener { }
+        binding.resetButton.setOnClickListener {
+            onResetButtonClicked()
+        }
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         return binding.root
     }
-
 
     private fun onStartButtonClicked() {
         if (hasBackgroundLocationPermission(requireContext())) {
@@ -93,6 +101,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         stopForegroundService()
         binding.stopButton.hide()
         binding.startButton.show()
+    }
+
+    private fun onResetButtonClicked() {
+        mapReset()
     }
 
     //버튼을 클릭하면 해당 함수가 호출 되면서 숫자들이 나옴
@@ -134,6 +146,27 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     private fun stopForegroundService() {
         binding.stopButton.disable()
         sendActionCommandToService(ACTION_SERVICE_STOP)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun mapReset() {
+        fusedLocationProviderClient.lastLocation.addOnCompleteListener {
+            val lastKnownLocation = LatLng(
+                it.result.latitude,
+                it.result.longitude
+            )
+            for (polyLine in polylineList) {
+                polyLine.remove()
+            }
+            map.animateCamera(
+                CameraUpdateFactory.newCameraPosition(
+                    setCameraPosition(lastKnownLocation)
+                )
+            )
+            locationList.clear()
+            binding.resetButton.hide()
+            binding.startButton.show()
+        }
     }
 
     // 서비스에 작업 명령을 보내는 것
@@ -266,7 +299,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 addAll(locationList)
             }
         )
-
+        polylineList.add(polyline)
     }
 
     // 이동시 카메라가 따라가는 것
