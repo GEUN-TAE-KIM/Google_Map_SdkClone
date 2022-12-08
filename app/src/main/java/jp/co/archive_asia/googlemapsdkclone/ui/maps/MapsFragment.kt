@@ -16,10 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.ButtCap
-import com.google.android.gms.maps.model.JointType
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import jp.co.archive_asia.googlemapsdkclone.R
@@ -46,6 +43,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     private val binding get() = _binding!!
 
     private lateinit var map: GoogleMap
+
+    private var startTime = 0L
+    private var stopTime = 0L
 
     private var locationList = mutableListOf<LatLng>()
 
@@ -198,9 +198,29 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 followPolyline()
             }
         }
-
+        TrackerService.startTime.observe(viewLifecycleOwner) {
+            startTime = it
+        }
+        TrackerService.stopTime.observe(viewLifecycleOwner) {
+            stopTime = it
+            if(stopTime != 0L) {
+                showBiggerPicture()
+            }
+        }
     }
 
+    // 화면 이동을 정지 한 후 카메라가 이동한 경로를 큰 그림으로 보여주기 위한 함수
+    private fun showBiggerPicture() {
+        val bounds = LatLngBounds.Builder()
+        for (location in locationList) {
+            bounds.include(location)
+        }
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngBounds(
+                bounds.build(), 100
+            ), 2000, null
+        )
+    }
 
     // 경로로 설정한 길을 지나가면 선이 남아서 흔적을 남기는 것
     private fun drawPolyline() {
