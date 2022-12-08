@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -22,7 +23,10 @@ import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import jp.co.archive_asia.googlemapsdkclone.R
 import jp.co.archive_asia.googlemapsdkclone.databinding.FragmentMapsBinding
+import jp.co.archive_asia.googlemapsdkclone.model.Result
 import jp.co.archive_asia.googlemapsdkclone.service.TrackerService
+import jp.co.archive_asia.googlemapsdkclone.ui.maps.MapUtil.calculateElapsedTime
+import jp.co.archive_asia.googlemapsdkclone.ui.maps.MapUtil.calculateTheDistance
 import jp.co.archive_asia.googlemapsdkclone.ui.maps.MapUtil.setCameraPosition
 import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_START
 import jp.co.archive_asia.googlemapsdkclone.util.Constants.ACTION_SERVICE_STOP
@@ -213,11 +217,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             stopTime = it
             if(stopTime != 0L) {
                 showBiggerPicture()
+                displayResults()
             }
         }
     }
 
-    // 화면 이동을 정지 한 후 카메라가 이동한 경로를 큰 그림으로 보여주기 위한 함수
+    // 화면 이동을 정지 한 후 카메라가 이동한 경로를 상세히 보기 위한 함수
     private fun showBiggerPicture() {
         val bounds = LatLngBounds.Builder()
         for (location in locationList) {
@@ -229,6 +234,26 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             ), 2000, null
         )
     }
+
+    // 화면을 결과표시를 나타나게 하는 것
+    private fun displayResults() {
+        val result = Result(
+            calculateTheDistance(locationList),
+            calculateElapsedTime(startTime, stopTime)
+        )
+        lifecycleScope.launch {
+            delay(2500)
+            val directions = MapsFragmentDirections.actionMapsFragmentToResultFragment(result)
+            findNavController().navigate(directions)
+            binding.startButton.apply {
+                hide()
+                enable()
+            }
+            binding.stopButton.hide()
+            binding.resetButton.show()
+        }
+    }
+
 
     // 경로로 설정한 길을 지나가면 선이 남아서 흔적을 남기는 것
     private fun drawPolyline() {
