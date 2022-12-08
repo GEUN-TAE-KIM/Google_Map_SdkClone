@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 //서비스를 연동하기 위해서
 //@AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
-    EasyPermissions.PermissionCallbacks {
+    EasyPermissions.PermissionCallbacks, GoogleMap.OnMarkerClickListener {
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
@@ -58,6 +58,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     private var locationList = mutableListOf<LatLng>()
     private var polylineList = mutableListOf<Polyline>()
+    private var markerList = mutableListOf<Marker>()
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -155,15 +156,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 it.result.latitude,
                 it.result.longitude
             )
-            for (polyLine in polylineList) {
-                polyLine.remove()
-            }
             map.animateCamera(
                 CameraUpdateFactory.newCameraPosition(
                     setCameraPosition(lastKnownLocation)
                 )
             )
+            for (polyLine in polylineList) {
+                polyLine.remove()
+            }
+            for(marker in markerList) {
+                marker.remove()
+            }
             locationList.clear()
+            markerList.clear()
             binding.resetButton.hide()
             binding.startButton.show()
         }
@@ -210,11 +215,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     }
 
     // 맵이 준비 될때마다 트리거하는 함수
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.isMyLocationEnabled = true
         map.setOnMyLocationButtonClickListener(this)
+        map.setOnMarkerClickListener(this)
         map.uiSettings.apply {
             // 이동, 줌 등 다 하지 못하게 한것
             isZoomControlsEnabled = false
@@ -266,6 +272,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 bounds.build(), 100
             ), 2000, null
         )
+        addMarker(locationList.first())
+        addMarker(locationList.last())
+    }
+
+    // 마커 추가
+    private fun addMarker(position: LatLng) {
+        val marker = map.addMarker(MarkerOptions().position(position))
+        markerList.add(marker!!)
     }
 
     // 화면을 결과표시를 나타나게 하는 것
@@ -330,5 +344,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             binding.startButton.show()
         }
         return false
+    }
+
+    override fun onMarkerClick(p0: Marker): Boolean {
+        return true
     }
 }
